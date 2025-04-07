@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>مضاعفة الأرباح</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #f9f9f9; text-align: center; padding: 50px; }
+        .box { background: white; padding: 30px; border-radius: 12px; display: inline-block; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, button { padding: 10px; margin-top: 10px; width: 200px; border-radius: 8px; border: 1px solid #ccc; }
+        button { cursor: pointer; background: #4CAF50; color: white; border: none; }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>مرحباً بك</h2>
+        <div id="auth">
+            <input type="password" id="password" placeholder="ادخل كلمة المرور">
+            <br>
+            <button onclick="login()">دخول</button>
+            <p id="error" style="color:red;"></p>
+        </div>
+        <div id="main" style="display:none;">
+            <h3>رصيدك: <span id="balance">200</span> دولار</h3>
+            <button onclick="multiply()">مضاعفة الرصيد</button>
+            <br><br>
+            <button onclick="withdraw()">سحب الأرباح</button>
+            <p id="status"></p>
+        </div>
+    </div>
+
+    <script>
+        let balance = 200;
+        function login() {
+            let pw = document.getElementById("password").value;
+            if (pw === "bilal123") {
+                document.getElementById("auth").style.display = "none";
+                document.getElementById("main").style.display = "block";
+            } else {
+                document.getElementById("error").innerText = "كلمة المرور غير صحيحة";
+            }
+        }
+        function multiply() {
+            balance *= 5;
+            document.getElementById("balance").innerText = balance;
+        }
+        function withdraw() {
+            fetch("/withdraw", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ amount: balance })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("status").innerText = data.message;
+            })
+            .catch(err => {
+                document.getElementById("status").innerText = "حدث خطأ أثناء محاولة السحب";
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>
